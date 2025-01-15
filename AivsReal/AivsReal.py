@@ -70,7 +70,7 @@ model.fit(x=x_train, y=y_train, batch_size=25, epochs=50)
 
 model.save('/content/drive/MyDrive/ml_results/AivsReal_tained.keras')
 
-#TESTING THE MODEL
+# TESTING THE MODEL
 TEST_DIR = "/content/drive/MyDrive/Data/Test"
 image_paths = []
 predictions = []
@@ -78,15 +78,20 @@ predictions = []
 for image_id in os.listdir(TEST_DIR):
     image_path = os.path.join(TEST_DIR, image_id)
     image_paths.append(image_path)
-    features = extract_features(image_paths)
-    features = features / 255.0
-    predictions_prob = model.predict(features)
-    predicted_classes = np.argmax(predictions_prob, axis=1)
-    predicted_labels = le.inverse_transform(predicted_classes)
-    results = pd.DataFrame({
-    'Id': [os.path.basename(path) for path in image_paths],
+features = extract_features(image_paths)
+features = features / 255.0
+predictions_prob = model.predict(features)
+predicted_classes = np.argmax(predictions_prob, axis=1)
+predicted_labels = le.inverse_transform(predicted_classes)
+results = pd.DataFrame({
+    'Id': [os.path.splitext(os.path.basename(path))[0] for path in image_paths],  # Strip '.jpg' extension
     'Label': predicted_labels
 })
+results.to_csv('/content/drive/MyDrive/ml_results/RESULTS_final.csv', index=False)
+
+print(f"Predictions saved to RESULTS_final.csv")
+
+
 
 results.to_csv('/content/drive/MyDrive/ml_results/RESULTS_final.csv', index=False)
-print(f"Predictions saved to RESULTS.csv")
+print("Predictions saved to RESULTS.csv")
